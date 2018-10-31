@@ -1,37 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Business;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using WebAPIXYInc.Entidades;
-using WebAPIXYInc.Entidades.Request;
+using Model.Request;
+using Model.Response;
 
 namespace WebAPIXYInc.Controllers
 {
     /// <summary>
     /// 
     /// </summary>
+    [EnableCors("Policy")]
     public class POIsController : Controller
     {
+        private readonly Service _services;
+
+        public POIsController(Service services)
+        {
+            _services = services;
+        }
+
         /// <summary>
-        /// Retorna todos os POIs
+        ///  Listar todos os POIs cadastrados
         /// </summary>
         /// <returns></returns>
         [HttpGet("pois")]
         public List<POI> GetAll()
         {
-            return new List<POI>();
+            try
+            {
+                var result = _services.GetAll();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
-        /// Cadastra novos POIs
+        /// Cadastrar pontos de interesse POIs
         /// </summary>
         /// <param name="poi"></param>
         /// <returns></returns>
         [HttpPost("pois")]
-        public POI Create(CreatePOI poi)
+        public POI Create([FromBody]CreatePOI poi)
         {
-            return new POI();
+            try
+            {
+                var entity = _services.Create(poi);
+
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -41,9 +67,18 @@ namespace WebAPIXYInc.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("pois/dmax")]
-        public List<POI> GetByDMax(RequestGetByDMax request)
+        public List<POI> GetByDMax([FromQuery]GetByDMax request)
         {
-            return new List<POI>();
+            try
+            {
+                var result = _services.GetByDMax(request);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

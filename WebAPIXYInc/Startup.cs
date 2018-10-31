@@ -6,6 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.EntityFrameworkCore;
+using Data.Models;
+using Business;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPIXYInc
 {
@@ -21,7 +25,25 @@ namespace WebAPIXYInc
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddTransient<Service>();
+
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+            });            
+
+            var connection = @"Server=(localdb)\\mssqllocaldb;Initial Catalog=db_xy_inc;Integrated Security=True;";
+            services.AddDbContext<XYIncContext>(options => options.UseSqlServer(connection));
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddCors(o => o.AddPolicy("Policy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
 
             // Configurando o serviço de documentação do Swagger
             services.AddSwaggerGen(c =>
